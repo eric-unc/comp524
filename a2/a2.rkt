@@ -32,14 +32,15 @@
     [else (token 'NAME (string->symbol str))]))
 
 ; Matching table
-; TODO
 (define re-table
   (list
-    (list #rx"^[ \r\n\t]+" skip-match) ; whitespace
-    (list #rx"^//[^\n]+(\n|$)" skip-match) ; // comments
-    (list #rx"^[=+/;]" punctuation-token)
-    (list #rx"^[0-9]+" number-token)
-    (list #rx"^[A-Za-z]+" name-or-keyword-token)))
+    (list #px"^[ \r\n\t]+" skip-match) ; whitespace
+    (list #px"^//[^\n]+(\n|$)" skip-match) ; // comments
+    (list #px"^/\\*(?:.|\n)*\\*/" skip-match) ; /* comments */
+    (list #px"^[(){},;.]" punctuation-token)
+    (list #px"^-?\\d+(?:\\.\\d+)?" number-token)
+    (list #px"^\".*\"" string-token)
+    (list #px"^[^(){},;.\" \r\n\t\\d][^(){},;.\" \r\n\t]*" name-or-keyword-token)))
 
 ; Lex function
 (define (lex str) null)
