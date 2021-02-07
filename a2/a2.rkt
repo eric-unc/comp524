@@ -43,7 +43,8 @@
     (list #px"^[(){},;.]" punctuation-token)
     (list #px"^-?\\d+(?:\\.\\d+)?(?=[\r\n\t (){},;.]|$)" number-token)
     (list #px"^\".*\"(?=[\r\n\t (){},;.]|$)" string-token)
-    (list #px"^[^(){},;.\" \r\n\t\\d][^(){},;.\" \r\n\t]*(?=[\r\n\t (){},;.]|$)" name-or-keyword-token)))
+    (list #px"^[^(){},;.\" \r\n\t\\d][^(){},;.\" \r\n\t]*(?=[\r\n\t (){},;.]|$)" name-or-keyword-token)
+    (list #px"^.+" invalid-token))) ; anything else basically
 
 ; Lex function
 (define (f-if-empty n) (if (empty? n) #f n))
@@ -59,5 +60,16 @@
              #f)) re-table))))
 
 (define (lex str)
-  (letrec ()
-    (#f)))
+  (letrec ([n-if-empty (lambda (lst)
+                         (if (empty? lst) null lst))]
+           
+           [lexer-inner (lambda (str)
+                          (n-if-empty (car (filter-map (lambda (re)
+         (if (regexp-match? (car re) str)
+             (cons
+              ((second re) (car (regexp-match (car re) str)))
+              (substring str
+                         (string-length (car (regexp-match (car re) str)))
+                         (string-length str)))
+             #f)) re-table))))])
+    (n-if-empty '())))
