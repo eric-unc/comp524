@@ -63,7 +63,7 @@
   (letrec ([n-if-empty (lambda (lst)
                          (if (empty? lst) null lst))]
            
-           [lexer-inner (lambda (str)
+           [lex-inner (lambda (str)
                           (n-if-empty (car (filter-map (lambda (re)
          (if (regexp-match? (car re) str)
              (cons
@@ -71,5 +71,13 @@
               (substring str
                          (string-length (car (regexp-match (car re) str)))
                          (string-length str)))
-             #f)) re-table))))])
+             #f)) re-table))))]
+           [lex-inner2 (lambda (str)
+                         (if (car (lex-inner str))
+                             (cons
+                              (car (lex-inner str))
+                              (if (equal? (cdr (lex-inner str)) "") null (lex-inner2 (cdr (lex-inner str)))))
+                             (if (equal? (cdr (lex-inner str)) "") ; if space
+                              null
+                              (lex-inner2 (cdr (lex-inner str))))))])
     (n-if-empty '())))

@@ -1,0 +1,2 @@
+def factorial = fun (n) {\n  // first check base case\n  if(<(n, 0.9),\n     1,
+     factorial(-(n, 1)) /* recursive case */ )\n};\n\nprint(+("5! is ", factorial(5)))
