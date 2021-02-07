@@ -43,7 +43,20 @@
     (list #px"^[(){},;.]" punctuation-token)
     (list #px"^-?\\d+(?:\\.\\d+)?(?=[\r\n\t (){},;.]|$)" number-token)
     (list #px"^\".*\"(?=[\r\n\t (){},;.]|$)" string-token)
-    (list #px"^[^(){},;.\" \r\n\t\\d][^(){},;.\" \r\n\t]*(?=[\r\n\t (){},;.]|$)" name-or-keyword-token)))
+    (list #px"^[^(){},;.\" \r\n\t\\d][^(){},;.\" \r\n\t]*(?=[\r\n\t (){},;.]|$)" punctuation-token)))
 
 ; Lex function
-(define (lex str) null)
+; TODO: names don't seem to be working, also don't pass the empty string
+(define (lexer-inner str)
+  (car (filter-map (lambda (re)
+         (if (regexp-match? (car re) str)
+             (cons
+              ((second re) (car (regexp-match (car re) str)))
+              (substring str
+                         (string-length (car (regexp-match (car re) str)))
+                         (string-length str)))
+             #f)) re-table)))
+
+(define (lex str)
+  (letrec ()
+    (#f)))
