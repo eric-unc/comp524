@@ -10,7 +10,7 @@
   (token
     (case str
       [("(") 'OPAREN]
-      [(")") 'RPAREN]
+      [(")") 'CPAREN]
       [("{") 'OBRACE]
       [("}") 'CBRACE]
       [(",") 'COMMA]
@@ -80,4 +80,11 @@
                              (if (equal? (cdr (lex-inner str)) "") ; if space
                               null
                               (lex-inner2 (cdr (lex-inner str))))))])
-    (n-if-empty '())))
+    (if (equal? str "") null (lex-inner2 str))))
+
+(module+ test
+  (require (only-in rackunit
+                    check-equal?))
+  (check-equal? (lex "") null)
+  )
+
