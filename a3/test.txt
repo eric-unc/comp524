@@ -1,0 +1,7 @@
+(define factorial
+  (fun (n)
+    (if (< n 0.9)
+        1  ;; base case
+        (factorial (- n 1) ;* recursive case *; ))))
+
+(print (+ "5! is " (factorial 5)))

@@ -2,4 +2,4 @@
 *.bak
 *.1
 *.zip
-
+*/compiled/*
