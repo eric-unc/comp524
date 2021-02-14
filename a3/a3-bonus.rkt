@@ -135,6 +135,31 @@
     (tokens (rest (tokens)))  ; update tokens: remove first token
     token))
 
-(define (parse code)
+(define (parse2 code)
   (parameterize ([tokens (lex code)])
     (parse-program)))
+
+(module+ test
+  (require (only-in rackunit
+                    check-equal?))
+  (check-equal? (parameterize ([tokens (lex "(define foo 7)")]) (parse-invocation))
+   '(invocation
+     (OPAREN #f)
+     (invocationTail
+      (DEFINE #f)
+      (NAME foo)
+      (expr
+       (atom
+        (number
+         (INT 7))))
+      (CPAREN #f))))
+
+  (check-equal? (parameterize ([tokens (lex "(list)")]) (parse-invocation))
+   '(invocation
+  (OPAREN #f)
+  (invocationTail
+   (exprList
+    (expr (atom (NAME list)))
+    (optExprList))
+   (CPAREN #f))))
+  )
