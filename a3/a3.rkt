@@ -14,7 +14,7 @@
         (parse-opt-expr-list)))
 
 (define (parse-opt-expr-list)
-  (if (empty? tokens)
+  (if (empty? (tokens))
       (list 'optExprList)
       (list 'optExprList (parse-expr-list))))
 
