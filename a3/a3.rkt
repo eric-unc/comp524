@@ -14,7 +14,7 @@
         (parse-opt-expr-list)))
 
 (define (parse-opt-expr-list)
-  (if (empty? (tokens))
+  (if (or (check 'CPAREN) (empty? (tokens)))
       (list 'optExprList)
       (list 'optExprList (parse-expr-list))))
 
@@ -59,7 +59,6 @@
     (tokens (rest (tokens)))  ; update tokens: remove first token
     token))
 
-; TODO https://piazza.com/class/kjvqyzyra2out?cid=69
 (define (parse code)
   (parameterize ([tokens (lex code)])
     (parse-program)))
