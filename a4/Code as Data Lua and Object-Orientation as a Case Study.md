@@ -1,6 +1,8 @@
 # Code as Data: Lua and Object-Orientation as a Case Study
 #### Eric Schneider
-Lua is a scripting language of considerable popularity, mainly used an embedded language to extend software. Lua is intentionally designed to be lightweight and simple. Lua feels like and looks like a normal imperative language, yet something about it seems rather pure. Part of this (???) can be justified in Lua's approach to object-orientation. Lua does not have a `class` keyword, nor a `struct` keyword, nor something equivalent; rather than treating object-orientation as some kind of magical construct in the language, a kind of object-orientation is achieved through existing constructs, which reflects a _code as data_ paradigm.
+Lua is a scripting language of considerable popularity, mainly used an embedded language to extend software. Lua feels like and looks like a normal imperative language, yet something about it seems rather pure. Lua is intentionally designed to be lightweight, simple, and consistent.
+
+The creators of Lua describe Lua's design as "mechanisms instead of policies" (Ierusalimschy el al., 2018). This can be demonstrated in Lua's approach to object-orientation. Lua does not have a `class` keyword, nor a `struct` keyword, nor something equivalent; rather than treating object-orientation as some kind of magical construct in the language, a kind of object-orientation is achieved through existing constructs, which reflects a _code as data_ paradigm.
 
 ## Primer 1: Tables in Lua
 Before explaining the details of object-orientation in Lua, a few constructs in Lua should be explained. The first is Lua's _table_. A table is a built-in data structure, essentially a hash table (also known as a hash map), but with some surprises. Below is an example declaration of such a table:
@@ -80,3 +82,4 @@ This idea of a function being simply another type is not particularly unique. Ja
 
 ## References
 1. Ierusalimschy, R. (2003). Programming in Lua (1st ed.). Lua.org. Retrieved February 18, 2021, from https://www.lua.org/pil/contents.html
+2. Ierusalimschy, R., De Figueiredo, L. H., & Celes, W. (2018). A look at the design of Lua. Communications of the ACM, 61(11), 114-123. doi:10.1145/3186277, from https://cacm.acm.org/magazines/2018/11/232214-a-look-at-the-design-of-lua/fulltext
