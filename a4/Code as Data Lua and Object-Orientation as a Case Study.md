@@ -81,6 +81,41 @@ Above, `minus` can be described as a function. However, the reality is more comp
 
 This idea of a function being simply another type is not particularly unique. JavaScript acts similarly; in fact, aside from using curly braces, the syntax is almost exactly the same. First-class functions stem from the idea of _code as data_. In the view of the Lua developers, code should be treated as data; a sequence of statements should be treated the same way that a sequence of numbers is treated.
 
+## Object-Orientation in Lua
+An introduction to object-orientation usually begins with simple examples. Consider a classical example of a "Person" class in Java:
+```java
+class Person {
+    public String name;
+    public int age;
+
+    public Person(name, age){
+        this.name = name;
+        this.age = age;
+    }
+}
+```
+
+This can be directly converted to Lua as follows:
+```lua
+Person = {
+  name = nil,
+  age = 0
+}
+
+Person.__index = Person
+
+function Person.new(name, age)
+  local self = setmetatable({}, Person)
+  self.name = name
+  self.age = age
+  return self
+end
+```
+
+The difference is stark. There is no class declaration since, again, Lua has no formal classes. Instead, a new table is created called `Person`. This table is just another mutable object just any other, but it has special meaning as given by the programmer. That is, this object is a _prototype_; it is the `Person` that all "instances" should base themselves on.
+
+Under the prototype and the following line is a declaration of a construction (`function Person.new(name, age)...`). Here, `new` is not some kind of keyword, but rather the name of a factory method. This method is added to the Person table.
+
 ## References
 1. Ierusalimschy, R. (2003). Programming in Lua (1st ed.). Lua.org. Retrieved February 18, 2021, from https://www.lua.org/pil/contents.html
-2. Ierusalimschy, R., De Figueiredo, L. H., & Celes, W. (2018). A look at the design of Lua. Communications of the ACM, 61(11), 114-123. doi:10.1145/3186277, from https://cacm.acm.org/magazines/2018/11/232214-a-look-at-the-design-of-lua/fulltext
+2. Ierusalimschy, R., De Figueiredo, L. H., & Celes, W. (2018). A look at the design of Lua. Communications of the ACM, 61(11), 114-123. doi:10.1145/3186277. Retrieved February 18, 2021, from https://cacm.acm.org/magazines/2018/11/232214-a-look-at-the-design-of-lua/fulltext
