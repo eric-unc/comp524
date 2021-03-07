@@ -17,26 +17,15 @@
       null
       (eval-expr-list (second opt-expr-list))))
 
-; todo
 (define (eval-expr expr)
   (if (equal? (first (second expr)) 'invocation)
       (eval-invocation (second expr))
       (eval-atom (second expr))))
 
-;(define (eval-expr expr) expr)
-
-#;(define (eval-atom atom)
-  atom)
-
-#;(define (eval-atom atom)
-  (if (equal? (first (second atom)) 'number)
-      (eval-number (second atom))
-      ()))
 
 (define (eval-atom atom)
   (cond
     [(equal? (first (second atom)) 'number) (eval-number (second atom))]
-    ;[(equal? (first (second atom)) 'NAME) (second (second atom))]
     [(equal? (first (second atom)) 'NAME) (check-name (second (second atom)))]
     [(equal? (first (second atom)) 'STRING) (second (second atom))]
     [else (error "Unknown atom? [This should not happen]")]))
@@ -53,19 +42,47 @@
     [(equal? name 'not) not]
     [(equal? name '=) =]
     [(equal? name '<) <]
+    [(equal? name 'and) 'and]
+    [(equal? name 'or) 'or]
     [else (error "Unknown rator!")]))
 
 (define (eval-number number)
   (second (second number)))
 
-#;(define (eval-invocation invocation)
-  (eval-expr-list (third invocation)))
+(define (check-special-form rator)
+  (or
+   (equal? rator 'and)
+   (equal? rator 'or)
+   ))
 
 (define (eval-invocation invocation)
   (let* ([list (eval-expr-list (third invocation))]
          [rator (first list)]
          [rands (rest list)])
-    (apply rator rands)))
+    (if (check-special-form rator)
+        (eval-special-form rator rands)
+        (apply rator rands))))
+
+(define (eval-special-form rator rands)
+  (cond
+    [(equal? rator 'and) (eval-and rands)]
+    [(equal? rator 'or) (eval-or rands)]))
+
+(define (eval-and rands)
+  (cond
+    [(empty? rands) #t]
+    [(equal? (length rands) 1) (first rands)]
+    [else (if (first rands)
+              (eval-and (rest rands))
+              #f)]))
+
+(define (eval-or rands)
+  (cond
+    [(empty? rands) #f]
+    [(equal? (length rands) 1) (first rands)]
+    [else (if (first rands)
+              #t
+              (eval-or (rest rands)))]))
 
 ; Unit tests
 (module+ test
