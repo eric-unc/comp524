@@ -37,8 +37,15 @@
                                         inner-string unescaped-char)])
     (token 'STRING unescaped-str)))
 
-(define (name-token str)
+#;(define (name-token str)
   (token 'NAME (string->symbol str)))
+
+(define (name-token str)
+  (cond
+    [(equal? str "let") (token 'LET #f)]
+    [(equal? str "define") (token 'DEFINE #f)]
+    [(equal? str "lambda") (token 'LAMBDA #f)]
+    [else (token 'NAME (string->symbol str))]))
 
 ;;;; Lexing rules table
 ;;;;
@@ -119,6 +126,9 @@
   (check-equal? (lex "\"\\\"\"") (list (token 'STRING "\"")))
   (check-equal? (lex "\"\\n\"") (list (token 'STRING "\n")))
   (check-equal? (lex "\"\\\\\"") (list (token 'STRING "\\")))
+  (check-equal? (lex "let") (list (token 'LET #f)))
+  (check-equal? (lex "lambda") (list (token 'LAMBDA #f)))
+  (check-equal? (lex "define something") (list (token 'DEFINE #f) (token 'NAME 'something)))
 
   (define example-program "
 def factorial = fun (n)
