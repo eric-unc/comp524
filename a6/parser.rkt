@@ -1,16 +1,19 @@
 #lang racket
 
+(provide parse)
+
 (require (only-in (file "lex.rkt")
                   lex))
-
-(provide parse)
 
 ;; Grammar:
 ;;
 ;; program ::= exprList
 ;; exprList ::= expr optExprList
 ;; optExprList ::= ɛ | exprList
-;; expr ::= atom | invocation
+;; expr ::= atom | invocation | let | define | lambda
+;; let ::= LET OPAREN NAME expr CPAREN expr
+;; define ::= DEFINE NAME expr
+;; lambda ::= LAMBDA OPAREN NAME CPAREN expr
 ;; atom ::= NAME | STRING | number
 ;; number ::= INT | FLOAT
 ;; invocation ::= OPAREN exprList CPAREN
@@ -135,16 +138,57 @@
 (define (invocation-pending?)
   (check 'OPAREN))
 
+(define (parse-let)
+  ; let ::= LET OPAREN NAME expr CPAREN expr
+  (list 'let
+        (consume 'LET)
+        (consume 'OPAREN)
+        (consume 'NAME)
+        (parse-expr)
+        (consume 'CPAREN)
+        (parse-expr)))
+
+(define (let-pending?)
+  (check 'LET))
+
+(define (parse-define)
+  ; define ::= DEFINE NAME expr
+  (list 'define
+        (consume 'DEFINE)
+        (consume 'NAME)
+        (parse-expr)))
+
+(define (define-pending?)
+  (check 'DEFINE))
+
+(define (parse-lambda)
+  ; lambda ::= LAMBDA OPAREN NAME CPAREN expr
+  (list 'lambda
+        (consume 'LAMBDA)
+        (consume 'OPAREN)
+        (consume 'NAME)
+        (consume 'CPAREN)
+        (parse-expr)))
+
+(define (lambda-pending?)
+  (check 'LAMBDA))
+
 (define (parse-expr)
-  ;; expr ::= atom | invocation
+  ;; expr ::= atom | invocation | let | define | lambda
   (list 'expr
-        (if (atom-pending?)
-            (parse-atom)
-            (parse-invocation))))
+        (cond
+          [(atom-pending?) (parse-atom)]
+          [(invocation-pending?) (parse-invocation)]
+          [(let-pending?) (parse-let)]
+          [(define-pending?) (parse-define)]
+          [else (parse-lambda)])))
 
 (define (expr-pending?)
   (or (atom-pending?)
-      (invocation-pending?)))
+      (invocation-pending?)
+      (let-pending?)
+      (define-pending?)
+      (lambda-pending?)))
 
 (define (parse-expr-list)
   ;; exprList ::= expr optExprList
@@ -236,7 +280,7 @@
                         (INT 8))))
                      (optExprList)))))))
 
-(module+ test ;; massive integration test
+#;(module+ test ;; massive integration test
   (check-equal? (parse "
 (define factorial
   (fun (n)

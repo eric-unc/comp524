@@ -1,5 +1,5 @@
 #lang racket
-(require "a3.rkt")
+(require "parser.rkt")
 
 (define (eval code)
   (eval-program (parse code)))
