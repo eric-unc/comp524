@@ -1,31 +1,35 @@
 #lang racket
 (require "parser.rkt")
 
+(define new-environment hash)
+(define add-binding hash-set)
+(define lookup-name hash-ref)
+
 (define (eval code)
-  (eval-program (parse code)))
+  (eval-program (parse code) (new-environment)))
 
-(define (eval-program program)
-  (last (eval-expr-list (second program))))
+(define (eval-program program env)
+  (last (eval-expr-list (second program) env)))
 
-(define (eval-expr-list expr-list)
+(define (eval-expr-list expr-list env)
   (if (equal? expr-list null)
       null
-      (cons (eval-expr (second expr-list)) (eval-opt-expr-list (third expr-list)))))
+      (cons (eval-expr (second expr-list) env) (eval-opt-expr-list (third expr-list) env))))
 
-(define (eval-opt-expr-list opt-expr-list)
-  (if (< (length opt-expr-list) 2) ; (equal? opt-expr-list null)
+(define (eval-opt-expr-list opt-expr-list env)
+  (if (< (length opt-expr-list) 2)
       null
-      (eval-expr-list (second opt-expr-list))))
+      (eval-expr-list (second opt-expr-list) env)))
 
-(define (eval-expr expr)
+(define (eval-expr expr env)
   (if (equal? (first (second expr)) 'invocation)
-      (eval-invocation (second expr))
-      (eval-atom (second expr))))
+      (eval-invocation (second expr) env)
+      (eval-atom (second expr) env)))
 
 
-(define (eval-atom atom)
+(define (eval-atom atom env)
   (cond
-    [(equal? (first (second atom)) 'number) (eval-number (second atom))]
+    [(equal? (first (second atom)) 'number) (eval-number (second atom) env)]
     [(equal? (first (second atom)) 'NAME) (check-name (second (second atom)))]
     [(equal? (first (second atom)) 'STRING) (second (second atom))]
     [else (error "Unknown atom? [This should not happen]")]))
@@ -46,7 +50,7 @@
     [(equal? name 'or) 'or]
     [else (error "Unknown rator!")]))
 
-(define (eval-number number)
+(define (eval-number number env)
   (second (second number)))
 
 (define (check-special-form rator)
@@ -55,34 +59,34 @@
    (equal? rator 'or)
    ))
 
-(define (eval-invocation invocation)
-  (let* ([list (eval-expr-list (third invocation))]
+(define (eval-invocation invocation env)
+  (let* ([list (eval-expr-list (third invocation) env)]
          [rator (first list)]
          [rands (rest list)])
     (if (check-special-form rator)
-        (eval-special-form rator rands)
+        (eval-special-form rator rands env)
         (apply rator rands))))
 
-(define (eval-special-form rator rands)
+(define (eval-special-form rator rands env)
   (cond
-    [(equal? rator 'and) (eval-and rands)]
-    [(equal? rator 'or) (eval-or rands)]))
+    [(equal? rator 'and) (eval-and rands env)]
+    [(equal? rator 'or) (eval-or rands env)]))
 
-(define (eval-and rands)
+(define (eval-and rands env)
   (cond
     [(empty? rands) #t]
     [(equal? (length rands) 1) (first rands)]
     [else (if (first rands)
-              (eval-and (rest rands))
+              (eval-and (rest rands env))
               #f)]))
 
-(define (eval-or rands)
+(define (eval-or rands env)
   (cond
     [(empty? rands) #f]
     [(equal? (length rands) 1) (first rands)]
     [else (if (first rands)
               #t
-              (eval-or (rest rands)))]))
+              (eval-or (rest rands) env))]))
 
 ; Unit tests
 (module+ test
