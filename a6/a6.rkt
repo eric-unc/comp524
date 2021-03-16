@@ -22,33 +22,59 @@
       (eval-expr-list (second opt-expr-list) env)))
 
 (define (eval-expr expr env)
-  (if (equal? (first (second expr)) 'invocation)
-      (eval-invocation (second expr) env)
-      (eval-atom (second expr) env)))
+  (let ([type (first (second expr))]
+        [val (second expr)])
+    (case type
+      ['atom (eval-atom val env)]
+      ['invocation (eval-invocation val env)]
+      ['let (eval-let val env)]
+      ['define (eval-define val env)]
+      ['lambda (eval-lambda val env)])))
 
+(define (eval-let let-expr env)
+  (let ([name (second (fourth let-expr))]
+        [val (eval-expr (fifth let-expr) env)]
+        [body (seventh let-expr)])
+    (eval-expr body
+               (add-binding env name val))))
+
+(define (eval-define define-expr env)
+  null)
+
+(define (eval-lambda lambda-expr env)
+  null)
 
 (define (eval-atom atom env)
-  (cond
-    [(equal? (first (second atom)) 'number) (eval-number (second atom) env)]
-    [(equal? (first (second atom)) 'NAME) (check-name (second (second atom)))]
-    [(equal? (first (second atom)) 'STRING) (second (second atom))]
-    [else (error "Unknown atom? [This should not happen]")]))
+  (let ([type (first (second atom))]
+        [val (second atom)])
+    (case type
+      ['number (eval-number val env)]
+      ;['NAME (check-name (second val))]
+      #;['NAME (if (equal? (check-name (second val)) null)
+                 (lookup-name env (check-name (second val)))
+                 (check-name (second val)))]
+      ['NAME (let ([name (check-name (second val))])
+               (if (equal? name null)
+                 (lookup-name env (second val))
+                 name))]
+      ['STRING (second val)]
+      [else (error "Unknown atom? [This should not happen]")])))
 
 (define (check-name name)
-  (cond
-    [(equal? name '+) +]
-    [(equal? name '-) -]
-    [(equal? name '*) *]
-    [(equal? name '/) /]
-    [(equal? name 'string-append) string-append]
-    [(equal? name 'string<?) string<?]
-    [(equal? name 'string=?) string=?]
-    [(equal? name 'not) not]
-    [(equal? name '=) =]
-    [(equal? name '<) <]
-    [(equal? name 'and) 'and]
-    [(equal? name 'or) 'or]
-    [else (error "Unknown rator!")]))
+  (case name
+    ['+ +]
+    ['- -]
+    ['* *]
+    ['/ /]
+    ['string-append string-append]
+    ['string<? string<?]
+    ['string=? string=?]
+    ['not not]
+    ['= =]
+    ['< <]
+    ['and 'and]
+    ['or 'or]
+    [else null]))
 
 (define (eval-number number env)
   (second (second number)))
@@ -56,8 +82,7 @@
 (define (check-special-form rator)
   (or
    (equal? rator 'and)
-   (equal? rator 'or)
-   ))
+   (equal? rator 'or)))
 
 (define (eval-invocation invocation env)
   (let* ([list (eval-expr-list (third invocation) env)]
@@ -68,9 +93,9 @@
         (apply rator rands))))
 
 (define (eval-special-form rator rands env)
-  (cond
-    [(equal? rator 'and) (eval-and rands env)]
-    [(equal? rator 'or) (eval-or rands env)]))
+  (case rator
+    ['and (eval-and rands env)]
+    ['or (eval-or rands env)]))
 
 (define (eval-and rands env)
   (cond
@@ -113,4 +138,8 @@
                          (eval "(string-append 1 \"a\")")))
   (check-exn exn:fail? (lambda ()
                          (eval "(/ 1 0)")))
+
+  ; A6 specific
+  (check-equal? (eval "let (x 5) x") 5)
+  (check-equal? (eval "let (x (+ 1 2)) (+ x 3)") 6)
   )
