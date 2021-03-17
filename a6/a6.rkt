@@ -38,10 +38,13 @@
     (eval-expr body
                (add-binding env name val))))
 
-(define (eval-define define-expr env)
-  null)
+(define (eval-define define-expr env) ; TODO
+  (let* ([name (second (third define-expr))]
+        [val (eval-expr (fourth define-expr) env)]
+        [newenv (add-binding env name val)])
+    val))
 
-(define (eval-lambda lambda-expr env)
+(define (eval-lambda lambda-expr env) ; TODO
   null)
 
 (define (eval-atom atom env)
@@ -49,10 +52,6 @@
         [val (second atom)])
     (case type
       ['number (eval-number val env)]
-      ;['NAME (check-name (second val))]
-      #;['NAME (if (equal? (check-name (second val)) null)
-                 (lookup-name env (check-name (second val)))
-                 (check-name (second val)))]
       ['NAME (let ([name (check-name (second val))])
                (if (equal? name null)
                  (lookup-name env (second val))
