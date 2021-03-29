@@ -7,13 +7,7 @@
 
 ;; Grammar:
 ;;
-;; program ::= exprList
-;; exprList ::= expr optExprList
-;; optExprList ::= ɛ | exprList
-;; expr ::= atom | invocation
-;; atom ::= NAME | STRING | number
-;; number ::= INT | FLOAT
-;; invocation ::= OPAREN exprList CPAREN
+;; see https://comp524sp21.cs.unc.edu/a07
 
 (module+ test
   (require (only-in rackunit
@@ -136,18 +130,28 @@
   (check 'OPAREN))
 
 (define (parse-expr)
-  ;; expr ::= atom | invocation
+  ;; expr ::= atom | invocation | let | define | lambda | class | new | send | super | set
   (list 'expr
         (cond
           [(atom-pending?) (parse-atom)]
           [(let-pending?) (parse-let)]
           [(define-pending?) (parse-define)]
           [(lambda-pending?) (parse-lambda)]
+          [(class-pending?) (parse-class)]
+          [(new-pending?) (parse-new)]
+          [(send-pending?) (parse-send)]
+          [(super-pending?) (parse-super)]
+          [(set-pending?) (parse-set)]
           [else  (parse-invocation)])))
 
 (define (let-pending?) (check 'LET))
 (define (define-pending?) (check 'DEFINE))
 (define (lambda-pending?) (check 'LAMBDA))
+(define (class-pending?) (check 'CLASS))
+(define (new-pending?) (check 'NEW))
+(define (send-pending?) (check 'SEND))
+(define (super-pending?) (check 'SUPER))
+(define (set-pending?) (check 'SET))
 
 (define (parse-let)
   (list 'let
@@ -181,12 +185,107 @@
     (cons 'lambda-args
           (loop null))))
 
+; class := CLASS NAME OPAREN optNameList CPAREN OBRACE optMethodList CBRACE
+(define (parse-class)
+  (list 'class
+        (consume 'CLASS)
+        (consume 'NAME)
+        (consume 'OPAREN)
+        (parse-opt-name-list)
+        (consume 'CPAREN)
+        (consume 'OBRACE)
+        (parse-opt-method-list)
+        (consume 'CBRACE)))
+
+; new := NEW NAME OPAREN optExprList CPAREN
+(define (parse-new)
+  (list 'new
+        (consume 'NEW)
+        (consume 'NAME)
+        (consume 'OPAREN)
+        (parse-opt-expr-list)
+        (consume 'CPAREN)))
+
+; send := SEND NAME NAME OPAREN optExprList CPAREN
+(define (parse-send)
+  (list 'send
+        (consume 'SEND)
+        (consume 'NAME)
+        (consume 'NAME)
+        (consume 'OPAREN)
+        (parse-opt-expr-list)
+        (consume 'CPAREN)))
+
+; super := SUPER OPAREN optExprList CPAREN
+(define (parse-super)
+  (list 'super
+        (consume 'SUPER)
+        (consume 'OPAREN)
+        (parse-opt-expr-list)
+        (consume 'CPAREN)))
+
+; set := SET NAME expr
+(define (parse-set)
+  (list 'set
+        (consume 'SET)
+        (consume 'NAME)
+        (parse-expr)))
+
+; optNameList := ɛ | nameList
+(define (parse-opt-name-list)
+        (if (name-list-pending?)
+            (list 'optNameList (parse-name-list))
+            (list 'optNameList)))
+
+; nameList := NAME optNameList
+(define (parse-name-list)
+  (list 'nameList
+        (consume 'NAME)
+        (parse-opt-name-list)))
+
+(define (name-list-pending?)
+  (check 'NAME))
+
+; optMethodList := ɛ | methodList
+(define (parse-opt-method-list)
+        (if (method-list-pending?)
+            (list 'optNameList (parse-method-list))
+            (list 'optNameList)))
+
+; methodList := method optMethodList
+(define (parse-method-list)
+  (list 'methodList
+        (parse-method)
+        (parse-opt-method-list)))
+
+(define (method-list-pending?)
+  (method-pending?))
+
+; method := NAME OPAREN optNameList CPAREN OBRACE exprList CBRACE
+(define (parse-method)
+  (list 'method
+        (consume 'NAME)
+        (consume 'OPAREN)
+        (parse-opt-name-list)
+        (consume 'CPAREN)
+        (consume 'OBRACE)
+        (parse-expr-list)
+        (consume 'CBRACE)))
+
+(define (method-pending?)
+  (check 'NAME))
+
 (define (expr-pending?)
   (or (atom-pending?)
       (let-pending?)
       (define-pending?)
       (lambda-pending?)
-      (invocation-pending?)))
+      (invocation-pending?)
+      (class-pending?)
+      (new-pending?)
+      (send-pending?)
+      (super-pending?)
+      (set-pending?)))
 
 (define (parse-expr-list)
   ;; exprList ::= expr optExprList

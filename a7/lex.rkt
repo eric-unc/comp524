@@ -23,7 +23,9 @@
   (token
     (case str
       [("(") 'OPAREN]
-      [(")") 'CPAREN])))
+      [(")") 'CPAREN]
+      [("{") 'OBRACE]
+      [("}") 'CBRACE])))
 
 (define (number-token type)
   ;; Note the indirection here: the first call returns a function of 1 argument.
@@ -45,6 +47,11 @@
     [("let") (token 'LET)]
     [("define") (token 'DEFINE)]
     [("lambda") (token 'LAMBDA)]
+    [("class") (token 'CLASS)]
+    [("new") (token 'NEW)]
+    [("send") (token 'SEND)]
+    [("super") (token 'SUPER)]
+    [("set") (token 'SET)]
     [else (name-token str)]))
 
 ;;;; Lexing rules table
@@ -58,7 +65,7 @@
     (list #rx"^[ \r\n\t]+" skip-match) ; whitespace
     (list #rx"^;\\*.*?\\*;" skip-match) ; /* */ comments
     (list #rx"^;;[^\n]+(\n|$)" skip-match) ; // comments
-    (list #rx"^[()]" punctuation-token)
+    (list #rx"^[(){}]" punctuation-token)
     (list #rx"^-?[0-9]+\\.[0-9]+(?=[\r\n\t (){},;.]|$)" (number-token 'FLOAT))
     (list #rx"^-?[0-9]+(?=[\r\n\t (){},;.]|$)" (number-token 'INT))
     (list #rx"^\"[^\"\\\\]*(\\\\.[^\"\\\\]*)*\"(?=[\r\n\t (){},;.]|$)"
