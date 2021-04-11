@@ -56,11 +56,11 @@ class Point {
 It is clear the defensiveness of this irrational complexity has only come from psychological repression of programming language designers. The ego correctly desires an escape from this madness, but the superego merely moderates this obsession with encapsulation into what may be called encapsulation-without-encapsulation, as seen above, whereby designers suffering from cognitive dissonance attempt to avoid forced encapsulation as far as one can while still operating within it as framework.
 
 ## Encapsulation as protection
-Encapsulation can be a positive good when it actually fits the idea of encapsulation, abstracting away excessive detail or offering data protection. Classes will indeed sometimes act as more than structures or records.
+Encapsulation can be a positive when it actually fits the idea of encapsulation, abstracting away excessive detail or offering data protection. Classes will indeed sometimes act as more than structures or records.
 
-However, it is not always clear that protections absolutely need to be added to fields that should not be mutated directly. The vast majority of classes are only used internally in projects. Is there anything more self-depreciating than trying to protect yourself from a mistake that you know you would not ever make?
+However, it is not always clear that protections absolutely need to be added to fields that should not be mutated directly. The vast majority of classes are only used internally in projects. Is there anything more self-depreciating than trying to protect yourself from a mistake that you know you would never make?
 
-Even when exported, these kinds of protections are not necessary, since _improper use is unlikely to happen when there are no reasons to improperly use a field_ and, in most cases, _can simply be prevented with proper documentation_. Programmers need not to assume that those that use their structures are monkeys typing away, mutating fields at random to cause undefined behavior.
+Even when exported, these kinds of protections are not necessary, since _improper use is unlikely to happen when there are no reasons to improperly use a field_ and, in most cases, _can simply be prevented with proper documentation_. Programmers need not assume that those that use their structures are monkeys typing away, mutating fields at random to cause undefined behavior.
 
 Consider Java's `ArrayList` class. Internally, `ArrayList` uses a private integer called `size` to keep track of the number of elements in the list. What would be the difference if this field was public? If public, `size` would then be mutable, which if mutated, could lead to undefined behavior. Yet, who would mutate it? There is no obvious reason to do so outside of the methods specifically designated to. It would defy all reasoning to do so.
 
@@ -69,7 +69,7 @@ When it comes to the use of mouse traps, it is obvious that mouse traps should o
 Perhaps instead of obsessing over authoritarian methods to create state safety, programmers should simply write less complicated code.
 
 ## Achievement of Encapsulation Outside of Object-Orientation
-Regardless of how one feels about all of the aspects of encapsulation, it is worthwhile to note that it can be achieved outside of object-orientation. Consider C, a notably non-object oriented language.
+Regardless of how one feels about all of the aspects of encapsulation, it is worthwhile to note that it can be achieved outside of object-orientation. Consider C, a notably non-object-oriented language.
 
 C allows for methods and variables inside of a file to be declared as _static_, which disallows files outside of it to access and use them. Individual members of structures cannot be declared as static; however, C does have "opaque data types", which allow for some level of abstraction. Essentially, the structure is declared in the header file, and defined in the source file. Thus, when working with such as a header file, the implementation details of a structures are not a concern.
 
