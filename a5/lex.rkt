@@ -1,10 +1,5 @@
 #lang racket
 
-;; To use this module, save this code as lex.rkt in the same directory as your
-;; code and add the following line to your file:
-;;
-;; (require (only-in (file "lex.rkt") lex))
-
 (provide lex)
 
 ;; The `[data #f]` is a default value for the 2nd positional argument.
@@ -16,7 +11,6 @@
 ;;;;
 ;;;; Given a string matching a regexp, return a token for that input or #f for
 ;;;; no token.
-
 (define (skip-match str) #f)
 
 (define (punctuation-token str)
@@ -45,7 +39,6 @@
 ;;;; Each item in the table is a 2-tuple (i.e. list of 2 elements):
 ;;;; 1. a regexp to detect a token at the beginning of a string
 ;;;; 2. a function (from above) to take the matched string and create a token
-
 (define re-table
   (list
     (list #rx"^[ \r\n\t]+" skip-match) ; whitespace

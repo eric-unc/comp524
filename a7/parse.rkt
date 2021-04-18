@@ -2,13 +2,11 @@
 
 (provide parse)
 
-(require (only-in (file "lex.rkt")
-                  lex))
+(require (only-in (file "lex.rkt") lex))
 
 ;; Grammar:
 ;;
 ;; see https://comp524sp21.cs.unc.edu/a07
-
 (module+ test
   (require (only-in rackunit
                     check-equal?

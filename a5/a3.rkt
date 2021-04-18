@@ -1,7 +1,6 @@
 #lang racket
 
-(require (only-in (file "lex.rkt")
-                  lex))
+(require (only-in (file "lex.rkt") lex))
 
 (provide parse)
 
@@ -14,7 +13,6 @@
 ;; atom ::= NAME | STRING | number
 ;; number ::= INT | FLOAT
 ;; invocation ::= OPAREN exprList CPAREN
-
 (module+ test
   (require (only-in rackunit
                     check-equal?

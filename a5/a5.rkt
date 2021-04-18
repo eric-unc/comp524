@@ -13,7 +13,7 @@
       (cons (eval-expr (second expr-list)) (eval-opt-expr-list (third expr-list)))))
 
 (define (eval-opt-expr-list opt-expr-list)
-  (if (< (length opt-expr-list) 2) ; (equal? opt-expr-list null)
+  (if (< (length opt-expr-list) 2)
       null
       (eval-expr-list (second opt-expr-list))))
 

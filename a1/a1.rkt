@@ -13,7 +13,6 @@
     [(empty? lst) '()]
     [(equal? item (car lst)) (cdr lst)]
     [else (cons (car lst) (remove-first item (cdr lst)))]))
-;(trace remove-first)
 
 ; More messy solution that should work
 (define (remove-first item lst)
