@@ -108,3 +108,58 @@ fun eval_bool_exp(exp): bool =
 		| IntEqual(e1, e2) => eval_aexp(e1) = eval_aexp(e2)
 		| StringLessThan(e1, e2) => eval_str_exp(e1) < eval_str_exp(e2)
 		| IntLessThan(e1, e2) => eval_aexp(e1) < eval_aexp(e2)
+
+(* Problem 10 *)
+datatype dsexp = Num of int
+			| Plus of dsexp * dsexp
+			| Minus of dsexp * dsexp
+			| Times of dsexp * dsexp
+			| Divide of dsexp * dsexp
+			| String of string
+			| StringConcat of dsexp * dsexp
+			| Not of dsexp
+			| StringEqual of dsexp * dsexp
+			| IntEqual of dsexp * dsexp
+			| StringLessThan of dsexp * dsexp
+			| IntLessThan of dsexp * dsexp
+
+(* Problem 11 *)
+datatype value = NumV of int
+			| StringV of string
+			| BoolV of bool
+			| ErrorV
+
+fun eval_dsexp exp =
+	case exp
+		of Num n => NumV n
+		| Plus(e1, e2) => (case (eval_dsexp e1, eval_dsexp e2)
+								of (NumV n1, NumV n2) => NumV(n1 + n2)
+								| _ => ErrorV)
+		| Minus(e1, e2) => (case (eval_dsexp e1, eval_dsexp e2)
+								of (NumV n1, NumV n2) => NumV(n1 - n2)
+								| _ => ErrorV)
+		| Times(e1, e2) => (case (eval_dsexp e1, eval_dsexp e2)
+								of (NumV n1, NumV n2) => NumV(n1 * n2)
+								| _ => ErrorV)
+		| Divide(e1, e2) => (case (eval_dsexp e1, eval_dsexp e2)
+								of (NumV n1, NumV n2) => NumV(n1 div n2)
+								| _ => ErrorV)
+		| String s => StringV s
+		| StringConcat(e1, e2) => (case (eval_dsexp e1, eval_dsexp e2)
+								of (StringV s1, StringV s2) => StringV(s1 ^ s2)
+								| _ => ErrorV)
+		| Not e => (case eval_dsexp e
+						of BoolV b => BoolV(not b)
+						| _ => ErrorV)
+		| StringEqual(e1, e2) => (case (eval_dsexp e1, eval_dsexp e2)
+								of (StringV s1, StringV s2) => BoolV(s1 = s2)
+								| _ => ErrorV)
+		| IntEqual(e1, e2) => (case (eval_dsexp e1, eval_dsexp e2)
+								of (NumV n1, NumV n2) => BoolV(n1 = n2)
+								| _ => ErrorV)
+		| StringLessThan(e1, e2) => (case (eval_dsexp e1, eval_dsexp e2)
+								of (StringV s1, StringV s2) => BoolV(s1 < s2)
+								| _ => ErrorV)
+		| IntLessThan(e1, e2) => (case (eval_dsexp e1, eval_dsexp e2)
+								of (NumV n1, NumV n2) => BoolV(n1 < n2)
+								| _ => ErrorV)
