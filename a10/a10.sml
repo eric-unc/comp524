@@ -3,7 +3,7 @@
 
 (* Problem 1 *)
 (* int -> int list‌‍‍‎‍ *)
-fun countdown(n: int) =
+fun countdown n =
 	if n < 0 then
 		[]
 	else
@@ -41,7 +41,7 @@ fun append(list1, list2) = list1 @ list2
 (* int list -> int‌‍‍‎‍ *)
 fun binaryToNatural(list) =
 	let
-		fun exp2(n) =
+		fun exp2 n =
 			if n = 0 then
 				1
 			else
@@ -52,7 +52,7 @@ fun binaryToNatural(list) =
 				0
 			else
 				if hd lst = 1 then
-					exp2(n) + binaryToNaturalInner(tl lst, n + 1)
+					exp2 n + binaryToNaturalInner(tl lst, n + 1)
 				else
 					binaryToNaturalInner(tl lst, n + 1)
 	in binaryToNaturalInner(list, 0)
@@ -65,9 +65,9 @@ fun insertAfterEvery(toFind, toPut, list) =
 		[]
 	else
 		if hd list = toFind then
-			hd(list)::toPut::insertAfterEvery(toFind, toPut, tl list)
+			hd list::toPut::insertAfterEvery(toFind, toPut, tl list)
 		else
-			hd(list)::insertAfterEvery(toFind, toPut, tl list)
+			hd list::insertAfterEvery(toFind, toPut, tl list)
 
 (* Problem 6 *)
 datatype aexp = Num of int
@@ -77,13 +77,13 @@ datatype aexp = Num of int
 			| Divide of aexp * aexp
 
 (* Problem 7 *)
-fun eval_aexp(exp: aexp): int =
+fun eval_aexp(exp) =
 	case exp
 		of Num n => n
-		| Plus(e1, e2) => eval_aexp(e1) + eval_aexp(e2)
-		| Minus(e1, e2) => eval_aexp(e1) - eval_aexp(e2)
-		| Times(e1, e2) => eval_aexp(e1) * eval_aexp(e2)
-		| Divide(e1, e2) => eval_aexp(e1) div eval_aexp(e2)
+		| Plus(e1, e2) => eval_aexp e1 + eval_aexp e2
+		| Minus(e1, e2) => eval_aexp e1 - eval_aexp e2
+		| Times(e1, e2) => eval_aexp e1 * eval_aexp e2
+		| Divide(e1, e2) => eval_aexp e1 div eval_aexp e2
 
 (* Problem 8 *)
 datatype str_exp = String of string
@@ -96,18 +96,18 @@ datatype bool_exp = Not of bool_exp
 				| IntLessThan of aexp * aexp
 
 (* Problem 9 *)
-fun eval_str_exp(exp): string =
+fun eval_str_exp(exp) =
 	case exp
 		of String s => s
-		| StringConcat(e1, e2) => eval_str_exp(e1) ^ eval_str_exp(e2)
+		| StringConcat(e1, e2) => eval_str_exp e1 ^ eval_str_exp e2
 
-fun eval_bool_exp(exp): bool =
+fun eval_bool_exp(exp) =
 	case exp
 		of Not e => not (eval_bool_exp e)
-		| StringEqual(e1, e2) => eval_str_exp(e1) = eval_str_exp(e2)
-		| IntEqual(e1, e2) => eval_aexp(e1) = eval_aexp(e2)
-		| StringLessThan(e1, e2) => eval_str_exp(e1) < eval_str_exp(e2)
-		| IntLessThan(e1, e2) => eval_aexp(e1) < eval_aexp(e2)
+		| StringEqual(e1, e2) => eval_str_exp e1 = eval_str_exp e2
+		| IntEqual(e1, e2) => eval_aexp e1 = eval_aexp e2
+		| StringLessThan(e1, e2) => eval_str_exp e1 < eval_str_exp e2
+		| IntLessThan(e1, e2) => eval_aexp e1 < eval_aexp e2
 
 (* Problem 10 *)
 datatype dsexp = Num of int
