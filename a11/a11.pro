@@ -35,6 +35,7 @@ reverse([X], [X]).
 reverse(X, Y) :- reverse(X, Y, []).
 
 % Problem 6
+/*
 % "Do not worry about the details. Just make sure you copy-paste this into all your answers."
 type(N, int) :- catch(clpfd:in(N, '..'(inf, sup)), error(type_error(integer, N), _), false).
 
@@ -92,7 +93,64 @@ type(first(P), T) :-
 
 type(second(P), T) :-
 	type(P, tuple(_, T)).
-
+*/
 % Problem 10 (WIP)
 in_env(Binding, [Binding|_]) :- !.
 in_env(Binding, [_|T]) :- in_env(Binding, T).
+
+type(name(X), Env, T) :- in_env(X, Env) is T.
+
+%type(N, _, int) :- catch(N in inf..sup, error(type_error(integer, N), _), false).
+%type(N, int) :- catch(clpfd:in(N, '..'(inf, sup)), error(type_error(integer, N), _), false).
+
+type(plus(L, R), Env, int) :-
+	type(L, Env, int),
+	type(R, Env, int).
+
+type(minus(L, R), Env, int) :-
+	type(L, Env, int),
+	type(R, Env, int).
+
+type(times(L, R), Env, int) :-
+	type(L, Env, int),
+	type(R, Env, int).
+
+type(divide(L, R), Env, int) :-
+	type(L, Env, int),
+	type(R, Env, int).
+
+type(zerop(X), Env, bool) :-
+	type(X, Env, int).
+
+type(lt(X, Y), Env, bool) :-
+	type(X, Env, int),
+	type(Y, Env, int).
+
+test(if(Test, Consequent, Alternate), Env, T) :-
+	type(Test, Env, bool),
+	type(Consequent, Env, T),
+	type(Alternative, Env, T).
+
+type(nil, Env, list(_)).
+type(cons(Head, Tail), Env, list(T)) :-
+	type(Head, Env, T),
+	type(Tail, Env, list(T)).
+
+type(nilp(List), Env, bool) :-
+	type(List, Env, list(_)).
+
+type(head(List), Env, T) :-
+	type(List, Env, list(T)).
+
+type(tail(List), Env, list(T)) :-
+	type(List, Env, list(T)).
+
+type(pair(X, Y), Env, tuple(A, B)) :-
+	type(X, A),
+	type(Y, B).
+
+type(first(P), Env, T) :-
+	type(P, tuple(T, _)).
+
+type(second(P), Env, T) :-
+	type(P, tuple(_, T)).
