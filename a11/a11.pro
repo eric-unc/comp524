@@ -96,13 +96,13 @@ type(first(P), T) :-
 type(second(P), T) :-
 	type(P, tuple(_, T)).
 */
-% Problem 10 (WIP)
+% Problem 10
 in_env(Binding, [Binding|_]) :- !.
 in_env(Binding, [_|T]) :- in_env(Binding, T).
 
-type(name(X), Env, T) :- in_env(binding(X, T), Env).
-
 type(N, _, int) :- catch(clpfd:in(N, '..'(inf, sup)), error(type_error(integer, N), _), false).
+
+type(name(X), Env, T) :- in_env(binding(X, T), Env).
 
 type(plus(L, R), Env, int) :-
 	type(L, Env, int),
