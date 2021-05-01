@@ -1,3 +1,5 @@
+:- use_module(library(clpfd)).
+
 % Problem 1
 member(_, []) :- false.
 member(X, [X | _]).
@@ -98,10 +100,9 @@ type(second(P), T) :-
 in_env(Binding, [Binding|_]) :- !.
 in_env(Binding, [_|T]) :- in_env(Binding, T).
 
-type(name(X), Env, T) :- in_env(X, Env) is T.
+type(name(X), Env, T) :- in_env(binding(X, T), Env).
 
-%type(N, _, int) :- catch(N in inf..sup, error(type_error(integer, N), _), false).
-%type(N, int) :- catch(clpfd:in(N, '..'(inf, sup)), error(type_error(integer, N), _), false).
+type(N, _, int) :- catch(clpfd:in(N, '..'(inf, sup)), error(type_error(integer, N), _), false).
 
 type(plus(L, R), Env, int) :-
 	type(L, Env, int),
@@ -126,12 +127,12 @@ type(lt(X, Y), Env, bool) :-
 	type(X, Env, int),
 	type(Y, Env, int).
 
-test(if(Test, Consequent, Alternate), Env, T) :-
+test(if(Test, Consequent, Alternative), Env, T) :-
 	type(Test, Env, bool),
 	type(Consequent, Env, T),
 	type(Alternative, Env, T).
 
-type(nil, Env, list(_)).
+type(nil, _, list(_)).
 type(cons(Head, Tail), Env, list(T)) :-
 	type(Head, Env, T),
 	type(Tail, Env, list(T)).
@@ -146,11 +147,11 @@ type(tail(List), Env, list(T)) :-
 	type(List, Env, list(T)).
 
 type(pair(X, Y), Env, tuple(A, B)) :-
-	type(X, A),
-	type(Y, B).
+	type(X, Env, A),
+	type(Y, Env, B).
 
 type(first(P), Env, T) :-
-	type(P, tuple(T, _)).
+	type(P, Env, tuple(T, _)).
 
 type(second(P), Env, T) :-
-	type(P, tuple(_, T)).
+	type(P, Env, tuple(_, T)).
