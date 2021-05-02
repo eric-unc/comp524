@@ -155,3 +155,29 @@ type(first(P), Env, T) :-
 
 type(second(P), Env, T) :-
 	type(P, Env, tuple(_, T)).
+
+% Problem 11
+:- set_prolog_flag(occurs_check, true).
+
+type(invoke(Proc, Arg), Env, Tresult) :-
+	type(Proc, Env, func(Targ, Tresult)),
+	type(Arg, Env, Targ).
+
+type(proc(Param, Body), Env, func(Tin, Tout)) :-
+	type(Body, [binding(Param, Tin) | Env], Tout).
+
+%% Some test queries:
+% type(invoke(proc(x, plus(first(name(x)), second(name(x)))), pair(5,3)), [], T).
+% T = int.
+
+% type(invoke(proc(x, nilp(name(x))), cons(1, nil)), [], T).
+% T = bool.
+
+% That work:
+% type(proc(x, name(x)), [], T).
+% T = func(_42290, _42290).
+
+% type(proc(x, plus(first(name(x)), second(name(x)))), [], T).
+% T = func(tuple(int, int), int).
+
+% type(proc(f, proc(x, invoke(name(f), invoke(name(f), name(x))))), [], T).
