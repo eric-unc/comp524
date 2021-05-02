@@ -173,7 +173,6 @@ type(proc(Param, Body), Env, func(Tin, Tout)) :-
 % type(invoke(proc(x, nilp(name(x))), cons(1, nil)), [], T).
 % T = bool.
 
-% That work:
 % type(proc(x, name(x)), [], T).
 % T = func(_42290, _42290).
 
